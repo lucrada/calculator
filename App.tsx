@@ -25,7 +25,13 @@ export default function App() {
   };
 
   const operator = (op) => {
-    if (primary === '') {
+    if (primary === '' && secondary === '') {
+      if (op === '+' || op === '-') {
+        setPrimary(op);
+      }
+      return;
+    }
+    if (primary === '+' || primary === '-' || primary === '') {
       return;
     }
     setSecondary(prev => prev + primary + ' ' + op + ' ');
@@ -46,7 +52,7 @@ export default function App() {
     setPrimary('');
     setSecondary('');
     setCurrentExpression(updatedExpression => {
-      setPrimary(eval(updatedExpression));
+      setPrimary(eval(updatedExpression).toString());
       return updatedExpression;
     });
     setCurrentExpression('');
