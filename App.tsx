@@ -1,11 +1,20 @@
 /* eslint-disable prettier/prettier */
 import React from 'react';
-import { TouchableOpacity, StyleSheet, Text, View } from 'react-native';
+import { TouchableOpacity, Text, View, Alert, Image } from 'react-native';
+import lightTheme from './styles/LightTheme';
+import darkTheme from './styles/DarkTheme';
 
 export default function App() {
   const [currentExpression, setCurrentExpression] = React.useState('');
   const [primary, setPrimary] = React.useState('');
   const [secondary, setSecondary] = React.useState('');
+  const [isDarkTheme, setIsDarkTheme] = React.useState(true);
+  const [styles, setStyles] = React.useState(darkTheme);
+
+  const changeTheme = () => {
+    setIsDarkTheme(!isDarkTheme);
+    setStyles(isDarkTheme ? darkTheme : lightTheme);
+  };
 
   const clear = () => {
     setPrimary('');
@@ -40,6 +49,9 @@ export default function App() {
   };
 
   const numbers = (num) => {
+    if (primary === '' && num === '00') {
+      num = '0';
+    }
     setPrimary(prev => prev + num);
   };
 
@@ -52,7 +64,14 @@ export default function App() {
     setPrimary('');
     setSecondary('');
     setCurrentExpression(updatedExpression => {
-      setPrimary(eval(updatedExpression).toString());
+      // eslint-disable-next-line no-eval
+      let evaluated_string = eval(updatedExpression).toString();
+      if (evaluated_string === 'Infinity') {
+        Alert.alert('Warning', 'Division by zero');
+        setPrimary('');
+      } else {
+        setPrimary(evaluated_string);
+      }
       return updatedExpression;
     });
     setCurrentExpression('');
@@ -61,123 +80,42 @@ export default function App() {
   return (
     <View style={styles.mainContainer}>
       <View style={styles.display}>
+        <TouchableOpacity onPress={changeTheme} style={styles.changeThemeButton}><Image style={styles.themeIcon} source={require('./assets/theme.png')} /></TouchableOpacity>
         <View style={styles.display_secondary}><Text style={styles.display_secondary_text}>{secondary}</Text></View>
         <View style={styles.display_primary}><Text style={styles.display_primary_text}>{primary}</Text></View>
       </View>
       <View style={styles.buttons}>
         <View style={styles.row}>
-          <TouchableOpacity onPress={clear} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>C</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => operator('%')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>%</Text></TouchableOpacity>
-          <TouchableOpacity onPress={backspace} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>←</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => operator('/')} style={styles.buttonOperator}><Text style={styles.buttonOperatorText}>&divide;</Text></TouchableOpacity>
+          <TouchableOpacity onPress={clear} style={{ ...styles.buttonNormal, ...styles.btn, ...styles.clearButton }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>C</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => operator('%')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonOperatorText, ...styles.btnText }}>%</Text></TouchableOpacity>
+          <TouchableOpacity onPress={backspace} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>←</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => operator('/')} style={{ ...styles.buttonOperator, ...styles.btn }}><Text style={{ ...styles.buttonOperatorText, ...styles.btnText }}>&divide;</Text></TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity onPress={() => numbers('7')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>7</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('8')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>8</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('9')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>9</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => operator('*')} style={styles.buttonOperator}><Text style={styles.buttonOperatorText}>x</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('7')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>7</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('8')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>8</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('9')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>9</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => operator('*')} style={{ ...styles.buttonOperator, ...styles.btn }}><Text style={{ ...styles.buttonOperatorText, ...styles.btnText }}>x</Text></TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity onPress={() => numbers('4')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>4</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('5')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>5</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('6')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>6</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => operator('-')} style={styles.buttonOperator}><Text style={styles.buttonOperatorText}>-</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('4')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>4</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('5')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>5</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('6')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>6</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => operator('-')} style={{ ...styles.buttonOperator, ...styles.btn }}><Text style={{ ...styles.buttonOperatorText, ...styles.btnText }}>-</Text></TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity onPress={() => numbers('1')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>1</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('2')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>2</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('3')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>3</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => operator('+')} style={styles.buttonOperator}><Text style={styles.buttonOperatorText}>+</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('1')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>1</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('2')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>2</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('3')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>3</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => operator('+')} style={{ ...styles.buttonOperator, ...styles.btn }}><Text style={{ ...styles.buttonOperatorText, ...styles.btnText }}>+</Text></TouchableOpacity>
         </View>
         <View style={styles.row}>
-          <TouchableOpacity onPress={() => numbers('00')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>00</Text></TouchableOpacity>
-          <TouchableOpacity onPress={() => numbers('0')} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>0</Text></TouchableOpacity>
-          <TouchableOpacity onPress={decimal} style={styles.buttonNormal}><Text style={styles.buttonNormalText}>.</Text></TouchableOpacity>
-          <TouchableOpacity onPress={equals} style={styles.buttonEquals}><Text style={styles.buttonEqualsText}>=</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('00')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>00</Text></TouchableOpacity>
+          <TouchableOpacity onPress={() => numbers('0')} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>0</Text></TouchableOpacity>
+          <TouchableOpacity onPress={decimal} style={{ ...styles.buttonNormal, ...styles.btn }}><Text style={{ ...styles.buttonNormalText, ...styles.btnText }}>.</Text></TouchableOpacity>
+          <TouchableOpacity onPress={equals} style={{ ...styles.buttonEquals, ...styles.btn }}><Text style={{ ...styles.buttonEqualsText, ...styles.btnText }}>=</Text></TouchableOpacity>
         </View>
       </View>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  mainContainer: {
-    flex: 1,
-    flexDirection: 'column',
-  },
-  display: {
-    flex: 1,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
-    justifyContent: 'flex-end',
-    backgroundColor: '#24273e',
-    paddingHorizontal: 15,
-    paddingVertical: 20,
-  },
-  display_secondary: {
-    width: '100%',
-    paddingVertical: 15,
-  },
-  display_secondary_text: {
-    textAlign: 'right',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  display_primary: {
-    width: '100%',
-    paddingVertical: 15,
-  },
-  display_primary_text: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    textAlign: 'right',
-  },
-  buttons: {
-    flex: 2,
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    backgroundColor: '#151a30',
-    paddingBottom: 30,
-    paddingVertical: 40,
-    paddingHorizontal: 15,
-  },
-  row: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  buttonNormal: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    height: 70,
-    marginRight: 10,
-    borderRadius: 10,
-  },
-  buttonNormalText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  buttonOperator: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#24273e',
-    borderRadius: 10,
-  },
-  buttonOperatorText: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  buttonEquals: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 10,
-    backgroundColor: '#30da06',
-  },
-  buttonEqualsText: {
-    fontWeight: 'bold',
-    fontSize: 20,
-    color: '#fff',
-  },
-});
